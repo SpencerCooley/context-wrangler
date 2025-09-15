@@ -1,16 +1,16 @@
-# Context Wrangler: A Long-Term Memory Solution for Gemini CLI
+# Context Wrangler: A Long-Term Memory Solution for AI Agents
 
-This project provides a simple command-line tool, `context-wrangler`, that acts as a bridge between the Gemini CLI and a Redis database. Its purpose is to give your Gemini assistant a persistent, long-term memory, allowing you to save and load the context of your work across different sessions.
+This project provides a simple command-line tool, `context-wrangler`, that acts as a bridge between an AI agent and a Redis database. Its purpose is to give your AI assistant a persistent, long-term memory, allowing you to save and load the context of your work across different sessions.
 
 ## The Problem
 
-The Gemini CLI is incredibly powerful, but its conversational context is session-specific. When you close the terminal, the assistant forgets the files you were working on, the decisions you made, and the overall goal of your tasks. This requires you to re-establish context every time you start a new session.
+AI agents are incredibly powerful, but their conversational context is often session-specific. When you close the terminal, the assistant forgets the files you were working on, the decisions you made, and the overall goal of your tasks. This requires you to re-establish context every time you start a new session.
 
 ## The Solution
 
-`context-wrangler` is a tool that your Gemini assistant can call using its `run_shell_command` capability. By instructing your assistant to use this tool, you can have it save a summary of your session (e.g., modified files, key decisions) to your own Redis instance. In a new session, you can instruct the assistant to read from Redis, instantly bringing it up to speed.
+`context-wrangler` is a tool that your AI agent can call using its ability to execute shell commands. By instructing your assistant to use this tool, you can have it save a summary of your session (e.g., modified files, key decisions) to your own Redis instance. In a new session, you can instruct the assistant to read from Redis, instantly bringing it up to speed.
 
-This guide will walk you through setting up `context-wrangler` for your own use with the Gemini CLI.
+This guide will walk you through setting up `context-wrangler` for your own use with an AI agent.
 
 ---
 
@@ -20,7 +20,7 @@ This guide will walk you through setting up `context-wrangler` for your own use 
 
 -   You must have **Python 3.6+** and **pip** installed.
 -   You need access to a **Redis instance**, either locally or on a cloud provider.
--   You are using the **Gemini CLI**.
+-   You are using an AI agent that can execute shell commands.
 
 ### 2. Get the Files
 
@@ -61,7 +61,7 @@ chmod +x context_wrangler.py
 
 ### 6. Make it Globally Accessible (Crucial Step)
 
-For the Gemini assistant to use the tool easily and reliably, it needs to be callable by name from any directory. Create a symbolic link to a directory in your system's `PATH`.
+For the AI agent to use the tool easily and reliably, it needs to be callable by name from any directory. Create a symbolic link to a directory in your system's `PATH`.
 
 The recommended way is to link it to `/usr/local/bin`:
 ```bash
@@ -72,40 +72,11 @@ This creates a global command named `context-wrangler` that the assistant can no
 
 ---
 
-## Making the Tool's Instructions Persistent (One-Time Setup)
-
-To avoid having to explain the `context-wrangler` tool to the Gemini assistant in every new session, you can use the assistant's `save_memory` tool to make the instructions permanent. This will store the tool's manifest in the assistant's long-term memory.
-
-### 1. The "Manifest"
-
-A file named `manifest.md` is included in this project. It contains a clear, concise explanation of what `context-wrangler` is, what its commands are, and how the assistant should use it.
-
-### 2. The One-Time Command
-
-In a Gemini CLI session, after you have set up the `context-wrangler` tool, give the assistant the following prompt. The assistant will read the manifest file and then use its `save_memory` tool to remember the instructions forever.
-
-**Example Prompt:**
-> "I have created a tool called `context-wrangler` that I want you to use for session context. Please read the file at `/path/to/your/projects/context-wrangler/manifest.md`, and then use your `save_memory` tool to remember its contents as 'Instructions for using the context-wrangler tool'."
-
-*Note: Make sure to replace `/path/to/your/projects/` with the actual absolute path to your project directory.*
-
-### 3. Future Usage
-
-Once you have completed the one-time setup, in any future session, you can simply say:
-
-> "Let's get started. Please recall how to use the `context-wrangler` tool and load our last session."
-
-The assistant will then access its saved memory, understand how to use the tool, and proceed to load your context from Redis. You will not need to explain the tool again.
-
----
-
-## How to Use with Gemini CLI (Manual Approach)
-
-If you choose not to use the `save_memory` feature, you will need to teach the assistant how to use the tool at the start of each session.
+## How to Use with an AI Agent
 
 ### 1. Teach Your Assistant
 
-The first time you use this in a session, you should provide the Gemini assistant with the contents of `manifest.md`. This file tells the assistant what the tool is, what commands it has, and how to use them.
+The first time you use this in a session, you should provide the AI agent with the contents of `manifest.md`. This file tells the assistant what the tool is, what commands it has, and how to use them.
 
 You can do this by saying:
 > "I've created a command-line tool called `context-wrangler` for you to save and load our session context. Here is the manifest that explains how to use it:"
@@ -121,7 +92,7 @@ At the end of a work session, simply ask the assistant to save the context.
 
 The assistant should then summarize the session and execute a command similar to this:
 ```bash
-context-wrangler write --key "gemini-context:2025-06-30" --data '{"project":...}'
+context-wrangler write --key "agent-context:2025-09-15" --data '{"project":...}'
 ```
 
 ### 3. Loading Context
@@ -131,4 +102,4 @@ At the start of a new session, ask the assistant to load the previous context.
 **Example Prompt:**
 > "Let's pick up where we left off. Please use `context-wrangler` to list the recent contexts and load the latest one."
 
-The assistant should then run `context-wrangler list --pattern "gemini-context:*"` to find the key, and then `context-wrangler read --key <latest_key>` to load the data. After this, it will be up to speed on your project.
+The assistant should then run `context-wrangler list --pattern "agent-context:*"` to find the key, and then `context-wrangler read --key <latest_key>` to load the data. After this, it will be up to speed on your project.
