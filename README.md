@@ -103,3 +103,8 @@ At the start of a new session, ask the assistant to load the previous context.
 > "Let's pick up where we left off. Please use `context-wrangler` to list the recent contexts and load the latest one."
 
 The assistant should then run `context-wrangler list --pattern "agent-context:*"` to find the key, and then `context-wrangler read --key <latest_key>` to load the data. After this, it will be up to speed on your project.
+
+---
+## Efficiently Using Redis Data
+
+A good optimization is to instruct your agent to not use the full raw data from Redis in system prompts, but instead create a summary. You can usually put this in whatever instruct file works GEMINI.md, QWEN.md, WHATEVERAGENT.md . The best of use for this is to establish an efficient use fo the redis data for your project.
